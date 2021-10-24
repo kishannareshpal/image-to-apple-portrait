@@ -1,2 +1,6 @@
+output/**
+input/**
 TAGS
-**/.DS_Store
+/**/.DS_Store
+# Keep .gitkeep
+!/**/.gitkeep
