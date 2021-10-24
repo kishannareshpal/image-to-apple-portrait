@@ -6,9 +6,9 @@ This small script converts multiple images into the Apple Portraits format. Fast
 >
 > This does not magically add depth and all of the cool portrait mode effects you might be thinking.
 >
-> Instead this makes the image **trick** the Photos app to recognize the image as Portrait instead of normal.
+> Instead this makes the image **"trick"** the Photos app to recognize the image as Portrait instead of normal.
 >
-> #### Ok, how does it work?
+> #### Ok, how does it do it's **"trick"**?
 >
 > The Apple Photos app recognizes an image as Portrait if the CustomRendered EXIF Tag is set to 8 (or Portrait). This program changes the tag of the image to be just that. [What the heck are EXIF Tags?](https://exiftool.org/TagNames/EXIF.html)
 
