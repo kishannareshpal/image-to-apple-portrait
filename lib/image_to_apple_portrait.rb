@@ -1,48 +1,59 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-require_relative 'image_to_apple_portrait/multi_exiftool_vendored'
+require_relative 'multi_exiftool_vendored'
 
-# Init the ExifTool writer
-writer = MultiExiftool::Writer.new
-writer.overwrite_original = true
+# Documentation
+class ImageToApplePortrait
+  VERSION = '0.1.1'
 
-# Input directory path
-# Put all of the images to be converted to Apple Portrait Mode here.
-input_path = File.join('..', 'input', '**.**')
+  attr_accessor :input_path, :ouput_path
+  attr_reader :filenames
 
-# Output directory path
-# The converted image files will be moved to here
-output_path = File.join('..', 'output')
+  def initialize(input_dir_path = nil, output_dir_path = nil)
+    # Input directory path
+    # Put all of the images to be converted to Apple Portrait Mode here
+    @input_path = input_dir_path || File.join('input', '**.**')
 
-# Grab the image files from the ./input dir
-input_images = Dir[input_path]
+    # Grab the image files from the dir at input_path
+    @filenames = Dir[@input_path]
 
-# Warn if there are no images to work with
-if input_images.empty?
-  puts 'No image(s) found'
-  puts
-  puts 'Convert any image into Apple Portrait mode'
-  puts 'Usage:'
-  puts "\tCopy images to be converted into ./inputs/ and try again."
-  puts "\tAfter the conversion, you will then find the images inside ./output"
-  abort
-end
+    # Output directory path
+    # Converted image files will be moved into here
+    @output_path = output_dir_path || 'output'
 
-# Update the tag responsible for Apple iOS Portrait mode
-# see https://exiftool.org/TagNames/EXIF.html#:~:text=0xa401-,CustomRendered,-int16u
-writer.filenames = input_images
-writer.values = {
-  SceneCaptureType: 'Portrait',
-  CustomRendered: 'Portrait' # can also use 'Portrait HDR'
-}
-written = writer.write
+    # Init the ExifTool writer
+    @writer = MultiExiftool::Writer.new
+    @writer.overwrite_original = true
+    @writer.filenames = @filenames
+  end
 
-if written
-  # Move the converted images to the ./output/ directory
-  FileUtils.mv(input_images, output_path)
-  puts "#{input_images.length} #{'file'.pluralize(input_images.length)} updated."
-else
-  # Something went wrong
-  puts writer.errors
+  def convert
+    # Update the tag responsible for Apple iOS Portrait mode
+    # see https://exiftool.org/TagNames/EXIF.html#:~:text=0xa401-,CustomRendered,-int16u
+    @writer.values = {
+      SceneCaptureType: 'Portrait',
+      CustomRendered: 'Portrait' # or could also use 'Portrait HDR'
+    }
+
+    success = false
+    begin
+      success = @writer.write
+    rescue StandardError
+      puts 'No image(s) to work with'
+      puts
+      puts 'Convert any image into Apple Portrait mode'
+      puts 'Usage:'
+      puts "\tCopy images to be converted into ./input/ and try again."
+      puts "\tAfter the conversion, you will then find the images inside ./output/"
+    end
+    # Move the converted images to the ./output/ directory
+    FileUtils.mv(@filenames, @output_path) if success
+
+    [success, num_images, @writer.errors]
+  end
+
+  def num_images
+    @filenames.length
+  end
 end

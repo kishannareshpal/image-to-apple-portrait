@@ -31,12 +31,12 @@ bundle install
 
 ### Usage
 
-1. Copy the images you want to convert into the `./input` dir.
-2. Run the `lib/image_to_apple_portrait.rb` script:
+1. Copy the images you want to convert into the `./input/` dir.
+2. Run the `main.rb` script:
     ```bash
-    $ ruby lib/image_to_apple_portrait.rb
+    $ ruby main.rb
     ```
-3. Voila! Grab your converted images from the `./output` dir.
+3. Voila! Grab your converted images from the `./output/` dir.
 
 ### Author
 
